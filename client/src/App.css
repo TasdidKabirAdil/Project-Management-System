@@ -1,37 +1,77 @@
-
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* General Styles for the Navbar */
+.navbar {
+  background-color: #131e4bbd; /* Primary color */
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for the navbar */
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.navbar-content {
+  display: flex;
+  width: 80%;
+  justify-content: space-between;
+  margin: auto;
+  align-items: center;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: rgb(146, 162, 186);
+  text-decoration: none;
+  transition: color 0.3s ease-in-out;
+}
+
+.navbar-brand:hover {
+  color: #ffc107; /* Hover color for brand */
+}
+
+.navbar-links {
+  display: flex;
+  margin-right: 63%;
+  gap: 1rem;
+}
+
+.navbar-link {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease-in-out;
+}
+
+.navbar-link:hover {
+  color: #ffc107; /* Hover color for links */
+}
+
+.navbar-link.active {
+  color: #ffc107; /* Active link highlight */
+}
+
+.logout-button {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #ff4d4d; /* Red color for the logout button */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.logout-button:hover {
+  background-color: #e60000; /* Darker red on hover */
+}
+
+/* Responsive design: Stack navbar items for smaller screens */
+@media (max-width: 768px) {
+  .navbar-content {
+    flex-direction: column;
+    align-items: flex-start;
   }
-  to {
-    transform: rotate(360deg);
+
+  .navbar-links {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
   }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }

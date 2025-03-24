@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { gql, useMutation } from '@apollo/client'
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import styles from './Login.module.css'
 
 const LOGIN = gql`
     mutation Login($username: String!, $password: String!) {
@@ -23,6 +24,8 @@ function Login() {
     const [error, setError] = useState('')
     const [login] = useMutation(LOGIN)
     const navigate = useNavigate()
+    const location = useLocation()
+    const message = location.state?.message;
 
     // useEffect(() => {
     //     if(localStorage.getItem('token')){
@@ -58,15 +61,42 @@ function Login() {
     }
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-            <form onSubmit={handleLogin}>
-                <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)}/><br></br>
-                <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}/><br></br>
-                {error && <p style={{ color: "red" }}>{error}</p>}
-                <button type="submit">Login</button>
+        <div className={styles.loginContainer}>
+          <div className={styles.loginCard}>
+            <h2 className={styles.loginTitle}>Login</h2>
+            
+            <form onSubmit={handleLogin} className={styles.loginForm}>
+              <input 
+                type="text" 
+                placeholder="Username" 
+                value={username} 
+                onChange={(e) => setUsername(e.target.value)}
+                className={styles.inputField}
+              />
+              
+              <input 
+                type="password" 
+                placeholder="Password" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)}
+                className={styles.inputField}
+              />
+              
+              {error && <p className={styles.errorMessage}>{error}</p>}
+              
+              {message && (
+                <div className={styles.authMessage}>
+                  {message}
+                </div>
+              )}
+              
+              <button type="submit" className={styles.submitButton}>
+                Login
+              </button>
             </form>
+          </div>
         </div>
-    )
+      );
 }
 
 export default Login;
