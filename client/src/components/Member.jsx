@@ -54,7 +54,6 @@ function Member() {
     const [teamProjects, setTeamProjects] = useState(null)
     const [UpdateProjectStatus] = useMutation(UPDATE_PROJECT_STATUS)
     const [statuses, setStatuses] = useState({})
-    const navigate = useNavigate()
 
     useEffect(() => {
         if (teamData && teamData.teams) {
@@ -69,6 +68,11 @@ function Member() {
         if (userTeam && projectData?.projects) {
             const foundProjects = projectData.projects.filter(project => project.team.id === userTeam.id)
             setTeamProjects(foundProjects)
+            const initialStatus = {}
+            foundProjects.forEach(project => {
+                initialStatus[project.id] = project.status
+            })
+            setStatuses(initialStatus)
             // if (foundProjects) {
             //     foundProjects.forEach(foundProject => {
             //         setStatus(foundProject.status)
