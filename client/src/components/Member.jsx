@@ -49,13 +49,13 @@ function Member() {
     const { loading, error, data: teamData } = useQuery(GET_TEAMS)
     const { data: projectData } = useQuery(GET_PROJECTS)
     const [userTeam, setUserTeam] = useState(null)
-    const [teamProject, setTeamProject] = useState(null)
+    const [teamProjects, setTeamProjects] = useState(null)
     const [UpdateProjectStatus] = useMutation(UPDATE_PROJECT_STATUS)
-    const [status, setStatus] = useState('')
+    const [statuses, setStatuses] = useState({})
 
     useEffect(() => {
-        if(teamData && teamData.teams) {
-            const foundTeam = teamData.teams.find(team => 
+        if (teamData && teamData.teams) {
+            const foundTeam = teamData.teams.find(team =>
                 team.members.some(member => member.id === userId)
             )
             setUserTeam(foundTeam)
@@ -63,30 +63,30 @@ function Member() {
     }, [teamData, userId])
 
     useEffect(() => {
-        if(userTeam && projectData?.projects) {
-            const foundProject = projectData.projects.find(project => project.team.id === userTeam.id)
-            setTeamProject(foundProject)
-            if (foundProject) {
-                setStatus(foundProject.status); // Set status based on the project
-            }
+        if (userTeam && projectData?.projects) {
+            const foundProjects = projectData.projects.filter(project => project.team.id === userTeam.id)
+            setTeamProjects(foundProjects)
+            // if (foundProjects) {
+            //     foundProjects.forEach(foundProject => {
+            //         setStatus(foundProject.status)
+            //     })
+            // }
         }
     }, [projectData, userTeam])
 
-    const handleStatusChange = (e) => {
-        e.preventDefault();
-        const newStatus = e.target.value;
-        setStatus(newStatus); // Update status state
-        if (teamProject) {
-            UpdateProjectStatus({ variables: { updateProjectStatusId: teamProject.id, status: newStatus } });
-        }
+    const handleStatusChange = (e, projectId) => {
+        e.preventDefault(); 
+        const newStatus = e.target.value
+        setStatuses(prev => ({ ...prev, [projectId]: newStatus}))
+        UpdateProjectStatus({ variables: { updateProjectStatusId: projectId, status: newStatus } });
     }
 
-    if(loading) return <p>Loading...</p>
+    if (loading) return <p>Loading...</p>
     if (error) return <p>Error: {error.message}</p>
 
     return (
-        <div style={{width: '80%', margin: "auto"}}>
-            <h1 style={{display: "flex",  justifyContent: "center"}}>WELCOME TO MEMBERS PAGE</h1>
+        <div style={{ width: '80%', margin: "auto" }}>
+            <h1 style={{ display: "flex", justifyContent: "center" }}>WELCOME TO MEMBERS PAGE</h1>
             <h2>Team Details</h2>
             {userTeam ? (
                 <>
@@ -94,11 +94,10 @@ function Member() {
                     <p>Description: {userTeam.description}</p>
                     <p>Members</p>
                     {userTeam.members.map((member) => (
-                        <ul key={member.id}>
-                            <li>Name: {member.username}</li>
-                            <li>Role: {member.role}</li>
-                        </ul>
-                    ))}                   
+                        <ol key={member.id}>
+                            <li>Name: {member.username}, Role: {member.role}</li>
+                        </ol>
+                    ))}
                     <p>Created Date: {new Date(parseInt(userTeam.createdDate)).toLocaleString()}</p>
                     <p>Status: {userTeam.status}</p>
                     <p>Custom Field: {userTeam.customField}</p>
@@ -106,19 +105,24 @@ function Member() {
             ) : (
                 <p>No team found for this user.</p>
             )}
-            <h2>Assigned Project</h2>
-            {teamProject ? (
+            <h2>Assigned Projects</h2>
+            {teamProjects ? (
                 <>
-                    <h3>Project Name: {teamProject.projectName}</h3>
-                    <p>Description: {teamProject.description}</p>
-                    <p>Start Date: {new Date(parseInt(teamProject.startDate)).toLocaleString()}</p>
-                    <p>End Date: {parseInt(teamProject.endDate) ? new Date(parseInt(teamProject.endDate)).toLocaleString() : "No date set"}</p>
-                    <label htmlFor="projectStatus">Project Satus: &nbsp;</label>
-                    <select id="projectStatus" value={status} onChange={handleStatusChange}>
-                        <option>Pending</option>
-                        <option>In Progress</option>
-                        <option>Completed</option>
-                    </select>
+                    {teamProjects.map((teamProject) => (
+                        <div key={teamProject.id}>
+                            <h3>Project Name: {teamProject.projectName}</h3>
+                            <p>Description: {teamProject.description}</p>
+                            <p>Start Date: {new Date(parseInt(teamProject.startDate)).toLocaleString()}</p>
+                            <p>End Date: {parseInt(teamProject.endDate) ? new Date(parseInt(teamProject.endDate)).toLocaleString() : "No date set"}</p>
+                            <p>Project Status: {teamProject.status}</p>
+                            <label htmlFor="projectStatus">Change Project Satus: &nbsp;</label>
+                            <select id="projectStatus" value={statuses[teamProject.id || teamProject.status]} onChange={(e) => handleStatusChange(e, teamProject.id)}>
+                                <option>Pending</option>
+                                <option>In Progress</option>
+                                <option>Completed</option>
+                            </select>
+                        </div>
+                    ))}
                 </>
             ) : (
                 <p>No Project Found</p>
